@@ -10,7 +10,7 @@ This is a robust and flexible Terraform module for creating a Virtual Private Cl
     *   **Default (with NATs):** Creates a high-availability architecture with a NAT Gateway per Availability Zone (AZ), ideal for production environments.
     *   **Isolated (no NATs):** Creates private subnets with no internet access, using a single route table, perfect for lab environments or more secure networks.
 *   **🗺️ Dynamic Subnets:** Creates public and private subnets in all the AZs you define.
-*   **🔒 VPC Endpoints:** Automatically configures Gateway Endpoints for S3 and DynamoDB, ensuring that traffic to these services does not leave the AWS network, which increases security and reduces costs.
+*   **🔒 VPC Endpoints:** Automatically aconfigures Gateway Endpoints for S3 and DynamoDB, ensuring that traffic to these services does not leave the AWS network, which increases security and reduces costs.
 *   **🔄 Customizable Routing:** Allows you to add your own custom routes to both public and private route tables.
 *   **📊 VPC Flow Logs:** Includes an option to enable traffic logs to be sent to CloudWatch, essential for monitoring and auditing.
 *   **💪 Stable & Predictable:** Adding or removing AZs does not cause the recreation of existing resources, only the necessary additions or removals.
@@ -77,6 +77,72 @@ module "vpc_lab" {
 
 ---
 
+## 🔄 Custom Routing
+
+You can add custom routes to both the public and private route tables using the `public_routes` and `private_routes` variables. This is useful for directing traffic to a specific appliance, a VPC peering connection, or a Transit Gateway.
+
+The route object accepts the following attributes:
+- `cidr_block`: The destination CIDR block.
+- `gateway_id`: The ID of an Internet Gateway or Virtual Private Gateway.
+- `nat_gateway_id`: The ID of a NAT Gateway.
+- `network_interface_id`: The ID of a network interface.
+- `vpc_peering_connection_id`: The ID of a VPC peering connection.
+- `transit_gateway_id`: The ID of a Transit Gateway.
+
+### Example: Routing to a Transit Gateway
+
+To route traffic to a Transit Gateway, you can add a route to the `private_routes` variable. The structure of this variable depends on whether NAT gateways are enabled.
+
+#### With `enable_nat_gateways = true` (Default)
+
+When NAT gateways are enabled, a separate route table is created for each Availability Zone. You must specify the routes for each AZ.
+
+```hcl
+module "vpc" {
+  # ... other variables
+  enable_nat_gateways = true
+
+  private_routes = {
+    "us-east-1a" = [
+      {
+        cidr_block         = "0.0.0.0/0"
+        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+      }
+    ],
+    "us-east-1b" = [
+      {
+        cidr_block         = "0.0.0.0/0"
+        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+      }
+    ]
+  }
+}
+```
+*For a complete, working example, see the `examples/example_with_nat.tf` file.*
+
+#### With `enable_nat_gateways = false`
+
+When NAT gateways are disabled, a single route table is used for all private subnets. You must use the key `"single"` to specify the routes.
+
+```hcl
+module "vpc" {
+  # ... other variables
+  enable_nat_gateways = false
+
+  private_routes = {
+    "single" = [
+      {
+        cidr_block         = "0.0.0.0/0" // Replace your Transit Gateway ID
+        transit_gateway_id = "tgw-1234567890abcdef0"
+      }
+    ]
+  }
+}
+```
+*For a complete, working example, see the `examples/example.tf` file.*
+
+---
+
 ## 📖 Variable Dictionary (Inputs & Outputs)
 
 ### 📥 Inputs
@@ -93,8 +159,8 @@ module "vpc_lab" {
 | `enable_nat_gateways`| Set to `false` for isolated mode. | `bool` | `true` | No |
 | `enable_flow_logs` | Enables or disables VPC Flow Logs. | `bool` | `true` | No |
 | `flow_log_retention` | Log retention period (in days). | `number` | `14` | No |
-| `public_routes` | List of custom routes for the public route table. | `list(object)` | `[]` | No |
-| `private_routes` | Map of custom routes for the private route tables. | `map(list(object))` | `{}` | No |
+| `public_routes` | List of custom routes for the public route table. See [Custom Routing](#-custom-routing) section for details. | `list(object)` | `[]` | No |
+| `private_routes` | Map of custom routes for the private route tables. See [Custom Routing](#-custom-routing) section for details. | `map(list(object))` | `{}` | No |
 | `tags` | Additional tags to apply to all resources. | `map(string)` | `{}` | No |
 
 ### 📤 Outputs

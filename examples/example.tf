@@ -9,7 +9,7 @@ module "vpc" {
   environment  = "live"
   aws_region   = "us-east-2"
   
-  enable_nat_gateways = false // private-spoke
+  enable_nat_gateways = false 
 
   vpc_cidr = "10.0.0.0/16"
   azs      = ["us-east-2a", "us-east-2b", "us-east-2c"]
@@ -27,6 +27,15 @@ module "vpc" {
   }
 
   enable_flow_logs = true
+
+  private_routes = {
+    "single" = [
+      {
+        cidr_block         = "0.0.0.0/0"
+        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+      }
+    ]
+  }
 
   tags = {
     "Owner" = "my-team"

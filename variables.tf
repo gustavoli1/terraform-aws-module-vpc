@@ -55,10 +55,11 @@ variable "public_routes" {
   description = "A list of custom routes for the public route table."
   type = list(object({
     cidr_block                = string
-    gateway_id                = string
-    nat_gateway_id            = string
-    network_interface_id      = string
-    vpc_peering_connection_id = string
+    gateway_id                = optional(string)
+    nat_gateway_id            = optional(string)
+    network_interface_id      = optional(string)
+    vpc_peering_connection_id = optional(string)
+    transit_gateway_id        = optional(string)
   }))
   default = []
 }
@@ -67,10 +68,11 @@ variable "private_routes" {
   description = "A map of lists of custom routes for the private route tables, keyed by AZ."
   type = map(list(object({
     cidr_block                = string
-    gateway_id                = string
-    nat_gateway_id            = string
-    network_interface_id      = string
-    vpc_peering_connection_id = string
+    gateway_id                = optional(string)
+    nat_gateway_id            = optional(string)
+    network_interface_id      = optional(string)
+    vpc_peering_connection_id = optional(string)
+    transit_gateway_id        = optional(string)
   })))
   default = {}
 }

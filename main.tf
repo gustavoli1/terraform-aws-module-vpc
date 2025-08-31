@@ -104,10 +104,11 @@ resource "aws_route_table" "public" {
     for_each = var.public_routes
     content {
       cidr_block                = route.value.cidr_block
-      gateway_id                = route.value.gateway_id
-      nat_gateway_id            = route.value.nat_gateway_id
-      network_interface_id      = route.value.network_interface_id
-      vpc_peering_connection_id = route.value.vpc_peering_connection_id
+      gateway_id                = try(route.value.gateway_id, null)
+      nat_gateway_id            = try(route.value.nat_gateway_id, null)
+      network_interface_id      = try(route.value.network_interface_id, null)
+      vpc_peering_connection_id = try(route.value.vpc_peering_connection_id, null)
+      transit_gateway_id        = try(route.value.transit_gateway_id, null)
     }
   }
 
@@ -143,10 +144,11 @@ resource "aws_route_table" "private" {
     for_each = lookup(var.private_routes, each.key, [])
     content {
       cidr_block                = route.value.cidr_block
-      gateway_id                = route.value.gateway_id
-      nat_gateway_id            = route.value.nat_gateway_id
-      network_interface_id      = route.value.network_interface_id
-      vpc_peering_connection_id = route.value.vpc_peering_connection_id
+      gateway_id                = try(route.value.gateway_id, null)
+      nat_gateway_id            = try(route.value.nat_gateway_id, null)
+      network_interface_id      = try(route.value.network_interface_id, null)
+      vpc_peering_connection_id = try(route.value.vpc_peering_connection_id, null)
+      transit_gateway_id        = try(route.value.transit_gateway_id, null)
     }
   }
 
