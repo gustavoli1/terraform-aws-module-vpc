@@ -132,8 +132,8 @@ module "vpc" {
   private_routes = {
     "single" = [
       {
-        cidr_block         = "0.0.0.0/0" // Replace your Transit Gateway ID
-        transit_gateway_id = "tgw-1234567890abcdef0"
+        cidr_block         = "0.0.0.0/0" 
+        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ]
   }
