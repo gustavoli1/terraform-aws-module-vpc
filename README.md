@@ -95,7 +95,7 @@ To route traffic to a Transit Gateway, you can add a route to the `private_route
 
 #### With `enable_nat_gateways = true` (Default)
 
-When NAT gateways are enabled, a separate route table is created for each Availability Zone. You must specify the routes for each AZ.
+When NAT gateways are enabled, a separate route table is created for each Availability Zone. You must specify the routes for each AZ. In this scenario, you would typically route specific internal CIDR blocks to the Transit Gateway, while the default route (`0.0.0.0/0`) would point to the NAT Gateway for internet access.
 
 ```hcl
 module "vpc" {
@@ -105,13 +105,13 @@ module "vpc" {
   private_routes = {
     "us-east-1a" = [
       {
-        cidr_block         = "0.0.0.0/0"
+        cidr_block         = "172.16.0.0/16" # Example: Route internal network to TGW
         transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ],
     "us-east-1b" = [
       {
-        cidr_block         = "0.0.0.0/0"
+        cidr_block         = "172.16.0.0/16" # Example: Route internal network to TGW
         transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ]
