@@ -6,6 +6,8 @@ locals {
     },
     var.tags
   )
+
+  transit_gateway_attachment_subnet_ids = length(var.transit_gateway_attachment_subnet_ids) > 0 ? var.transit_gateway_attachment_subnet_ids : [for k, s in aws_subnet.private : s.id]
 }
 
 resource "aws_vpc" "main" {
@@ -115,7 +117,7 @@ resource "aws_route_table" "public" {
   tags = merge(
     local.common_tags,
     {
-      "Name" = "${var.project_name}-public-rt"
+      "Name" = "rtb-public"
     }
   )
 }
@@ -155,7 +157,7 @@ resource "aws_route_table" "private" {
   tags = merge(
     local.common_tags,
     {
-      "Name" = "${var.project_name}-private-rt-${each.key}"
+      "Name" = var.enable_nat_gateways ? "${var.project_name}-private-rt-${each.key}" : "rtb-private-spoke"
     }
   )
 }
@@ -268,5 +270,20 @@ resource "aws_iam_role_policy" "flow_logs_policy" {
   ]
 }
 EOF
+}
+
+resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
+  count = var.attach_to_transit_gateway ? 1 : 0
+
+  subnet_ids         = local.transit_gateway_attachment_subnet_ids
+  transit_gateway_id = var.transit_gateway_id
+  vpc_id             = aws_vpc.main.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "${var.project_name}-tgw-attachment"
+    }
+  )
 }
 

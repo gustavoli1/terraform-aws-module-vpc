@@ -82,3 +82,22 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "attach_to_transit_gateway" {
+  description = "Set to true to attach the VPC to a Transit Gateway."
+  type        = bool
+  default     = false
+}
+
+variable "transit_gateway_id" {
+  description = "The ID of the Transit Gateway to attach the VPC to."
+  type        = string
+  default     = ""
+}
+
+variable "transit_gateway_attachment_subnet_ids" {
+  description = "A list of subnet IDs to use for the Transit Gateway attachment. If empty, the private subnets will be used."
+  type        = list(string)
+  default     = []
+}
+

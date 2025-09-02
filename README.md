@@ -143,6 +143,35 @@ module "vpc" {
 
 ---
 
+## 🔗 Transit Gateway Attachment
+
+This module can automatically attach the VPC to a Transit Gateway, which is especially useful when the Transit Gateway is shared with your account via AWS RAM.
+
+To enable this, set `attach_to_transit_gateway = true` and provide the Transit Gateway ID.
+
+```hcl
+module "vpc_with_tgw_attachment" {
+  source = "./"
+
+  # ... other variables
+
+  # Attach to Transit Gateway
+  attach_to_transit_gateway = true
+  transit_gateway_id        = "tgw-0123456789abcdef0" # <-- Replace with your TGW ID
+
+  # Optional: Specify subnets for the attachment.
+  # If omitted, the private subnets will be used by default.
+  # transit_gateway_attachment_subnet_ids = [
+  #   module.vpc_with_tgw_attachment.private_subnet_ids[0],
+  #   module.vpc_with_tgw_attachment.private_subnet_ids[1],
+  # ]
+}
+```
+
+*For a complete, working example, see the `examples/example_with_transit_gateway.tf` file.*
+
+---
+
 ## 📖 Variable Dictionary (Inputs & Outputs)
 
 ### 📥 Inputs
@@ -162,6 +191,9 @@ module "vpc" {
 | `public_routes` | List of custom routes for the public route table. See [Custom Routing](#-custom-routing) section for details. | `list(object)` | `[]` | No |
 | `private_routes` | Map of custom routes for the private route tables. See [Custom Routing](#-custom-routing) section for details. | `map(list(object))` | `{}` | No |
 | `tags` | Additional tags to apply to all resources. | `map(string)` | `{}` | No |
+| `attach_to_transit_gateway` | Set to `true` to attach the VPC to a Transit Gateway. | `bool` | `false` | No |
+| `transit_gateway_id` | The ID of the Transit Gateway to attach to. | `string` | `""` | No |
+| `transit_gateway_attachment_subnet_ids` | Subnets to use for the TGW attachment. Defaults to private subnets. | `list(string)` | `[]` | No |
 
 ### 📤 Outputs
 
@@ -172,6 +204,7 @@ module "vpc" {
 | `private_subnet_ids`| The IDs of the private subnets. |
 | `public_route_table_id`| The ID of the public route table. |
 | `private_route_table_ids`| The IDs of the private route tables. |
+| `transit_gateway_attachment_id` | The ID of the Transit Gateway attachment. |
 
 ---
 

@@ -22,3 +22,8 @@ output "private_route_table_ids" {
   description = "The IDs of the private route tables."
   value       = [for rt in aws_route_table.private : rt.id]
 }
+
+output "transit_gateway_attachment_id" {
+  description = "The ID of the Transit Gateway attachment."
+  value       = try(aws_ec2_transit_gateway_vpc_attachment.main[0].id, "")
+}
