@@ -31,19 +31,19 @@ module "vpc" {
   private_routes = {
     "us-east-2a" = [
       {
-        cidr_block         = "0.0.0.0/0"
+        cidr_block         = "172.16.0.0/16"
         transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ],
     "us-east-2b" = [
       {
-        cidr_block         = "0.0.0.0/0"
+        cidr_block         = "172.16.0.0/16"
         transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ],
     "us-east-2c" = [
       {
-        cidr_block         = "0.0.0.0/0"
+        cidr_block         = "172.16.0.0/16"
         transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
       }
     ]
