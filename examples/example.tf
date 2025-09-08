@@ -1,5 +1,9 @@
+locals {
+    region = "us-east-1"	// Replace for your Region       
+}
+
 provider "aws" {
-  region = "us-east-2"
+  region = local.region
 }
 
 module "vpc" {
@@ -7,25 +11,26 @@ module "vpc" {
 
   project_name = "vpc-egress"
   environment  = "live"
-  aws_region   = "us-east-2"
+  aws_region   = local.region
   
   enable_nat_gateways = false 
   enable_flow_logs = true
 
   vpc_cidr = "10.0.0.0/16"
-  azs      = ["us-east-2a", "us-east-2b", "us-east-2c"]
+  azs      = = ["${local.region}a", "${local.region}b", "${local.region}c"]
 
   public_subnets_cidrs = {
-    "us-east-2a" = "10.0.1.0/24"
-    "us-east-2b" = "10.0.2.0/24"
-    "us-east-2c" = "10.0.3.0/24"
+    "${local.region}a" = "10.53.1.0/24"
+    "${local.region}b" = "10.53.2.0/24"
+    "${local.region}c" = "10.53.3.0/24"
   }
 
   private_subnets_cidrs = {
-    "us-east-2a" = "10.0.101.0/24"
-    "us-east-2b" = "10.0.102.0/24"
-    "us-east-2c" = "10.0.103.0/24"
+    "${local.region}a" = "10.53.101.0/24"
+    "${local.region}b" = "10.53.102.0/24"
+    "${local.region}c" = "10.53.103.0/24"
   }
+  
   tags = {
     "Owner" = "my-team"
   }

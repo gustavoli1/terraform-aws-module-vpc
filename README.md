@@ -168,6 +168,15 @@ module "vpc_with_tgw_attachment" {
 }
 ```
 
+### ⚠️ Important Note on Attachment Recreation
+
+To prevent errors when removing an Availability Zone, this module uses a `create_before_destroy` lifecycle policy for the Transit Gateway attachment. This means that when you remove an AZ from your configuration, the existing attachment will be destroyed and a new one will be created with an updated list of subnets.
+
+This has an important implication: **the new attachment will have a new ID**.
+
+*   If you use **route propagation** in your Transit Gateway route table, the route to the VPC should be updated automatically.
+*   If you use **static routes** in your Transit Gateway route table that point to the attachment ID, you will need to **manually update the route** to point to the new attachment ID after the changes are applied.
+
 *For a complete, working example, see the `examples/example_with_transit_gateway.tf` file.*
 
 ---

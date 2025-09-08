@@ -1,50 +1,60 @@
-provider "aws" {
-  region = "us-east-2"
+locals {
+    region = "us-east-1"             // Replace for your Region
+    tgw_id = "tgw-0ff5efbf836770059" // Replace your Transit Gateway ID
 }
+
+provider "aws" {
+  region = local.region
+}
+
 
 module "vpc" {
   source = "../"
 
   project_name = "vpc-egress-with-nat"
   environment  = "live"
-  aws_region   = "us-east-2"
+  aws_region   = local.region
   
   enable_nat_gateways = true
 
   vpc_cidr = "10.1.0.0/16" 
-  azs      = ["us-east-2a", "us-east-2b", "us-east-2c"]
+  azs      = ["${local.region}a", "${local.region}b", "${local.region}c"]
 
   public_subnets_cidrs = {
-    "us-east-2a" = "10.1.1.0/24"
-    "us-east-2b" = "10.1.2.0/24"
-    "us-east-2c" = "10.1.3.0/24"
+    "${local.region}a" = "10.1.1.0/24"
+    "${local.region}b" = "10.1.2.0/24"
+    "${local.region}c" = "10.1.3.0/24"
   }
 
   private_subnets_cidrs = {
-    "us-east-2a" = "10.1.101.0/24"
-    "us-east-2b" = "10.1.102.0/24"
-    "us-east-2c" = "10.1.103.0/24"
+    "${local.region}a" = "10.1.101.0/24"
+    "${local.region}b" = "10.1.102.0/24"
+    "${local.region}c" = "10.1.103.0/24"
   }
 
   enable_flow_logs = true
 
+  attach_to_transit_gateway = true
+
+  transit_gateway_id        = local.tgw_id
+
   private_routes = {
-    "us-east-2a" = [
+    "${local.region}a" = [
       {
         cidr_block         = "172.16.0.0/16"
-        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+        transit_gateway_id = local.tgw_id // Replace your Transit Gateway ID
       }
     ],
-    "us-east-2b" = [
+    "${local.region}b" = [
       {
         cidr_block         = "172.16.0.0/16"
-        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+        transit_gateway_id = local.tgw_id // Replace your Transit Gateway ID
       }
     ],
-    "us-east-2c" = [
+    "${local.region}c" = [
       {
         cidr_block         = "172.16.0.0/16"
-        transit_gateway_id = "tgw-1234567890abcdef0" // Replace your Transit Gateway ID
+        transit_gateway_id = local.tgw_id // Replace your Transit Gateway ID
       }
     ]
   }

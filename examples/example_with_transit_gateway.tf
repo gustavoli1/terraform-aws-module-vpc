@@ -1,12 +1,11 @@
+locals {
+    region = "us-east-1"             // Replace for your Region
+    tgw_id = "tgw-12345f836770059" // Replace your Transit Gateway ID
+}
+
 provider "aws" {
   region = local.region
 }
-
-locals {
-    region = "us-east-1"             // Replace for your Region
-    tgw_id = "tgw-0ff5efbf836770059" // Replace your Transit Gateway ID
-}
-
 
 module "vpc_with_tgw_attachment" {
   source = "../"
